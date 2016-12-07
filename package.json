@@ -1,0 +1,19 @@
+{
+  "name": "webgl-hacks",
+  "version": "1.0.0",
+  "description": "Hacks for me to learn my way around webgl",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benfoxall/webgl-hacks.git"
+  },
+  "author": "Ben Foxall (@benjaminbenben)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/benfoxall/webgl-hacks/issues"
+  },
+  "homepage": "https://github.com/benfoxall/webgl-hacks#readme"
+}
