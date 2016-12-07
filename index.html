@@ -4,7 +4,11 @@
     <meta charset="utf-8">
     <title>WebGL Hacks</title>
     <style media="screen">
-      body { font-family: sans-serif; color: #555; text-rendering: geometricPrecision; } h1 { font-weight: 100; } ul { padding: 0 } li { list-style: none; float:left } a { color:#aaa; text-decoration: none; text-align: center; transition: .3s; display: block; background: #f4f4f4; margin: 1px; height: 5em; width: 5em; line-height: 5em; } a:hover { color:#000; background: #eee; box-shadow: inset rgba(0,0,0,0.2) 0 0 4px }
+      body { font-family: sans-serif; color: #555; text-rendering: geometricPrecision; }
+      h1 { font-weight: 100; }
+      ul { padding: 0 } li { list-style: none; float:left }
+      a { color:#aaa; text-decoration: none; transition: .3s; display: block; background: #f4f4f4; margin: 1px; height: 5em; width: 5em; background-size: cover; padding: .5em}
+      a:hover { color:#000; box-shadow: inset rgba(0,0,0,0.2) 0 0 4px;}
     </style>
   </head>
   <body>
@@ -14,5 +18,13 @@
       <li><a href="01/">01</a></li>
       <li><a href="02/">02</a></li>
     </ul>
+
+
+    <script type="text/javascript">
+      [].forEach.call(
+        document.querySelectorAll('li a'), function(el){
+        el.style.backgroundImage = 'url('+el.getAttribute('href') + 'screenshot.png)'
+      })
+    </script>
   </body>
 </html>
