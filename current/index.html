@@ -40,16 +40,12 @@
         attribute vec4 aPosition;
         void main () {
           gl_Position = aPosition;
-          gl_PointSize = 5.0;
         }`)
 
       var fragmentShader = compile(gl, gl.FRAGMENT_SHADER, `
         precision mediump float;
         uniform vec4 uFragColor;
         void main () {
-          if(length(gl_PointCoord-vec2(0.5)) > 0.5)
-            discard;
-
           gl_FragColor = uFragColor;
         }`
       )
@@ -70,11 +66,11 @@
 
       gl.uniform4f(uFragColor, 0, .5, 1, .7)
 
-      var positions = new Float32Array(1000)
-
-      for (var i = 0; i < positions.length; i++) {
-        positions[i] = (Math.random() - .5) * (Math.random())
-      }
+      var positions = new Float32Array([
+        0.5,-.5,
+        0.5,0.5,
+        -.5,0.0,
+      ])
 
       var buffer = gl.createBuffer();
       if (!buffer) throw new Error('Failed to create buffer.');
@@ -83,7 +79,7 @@
       gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(aPosition);
 
-      gl.drawArrays(gl.POINTS, 0, positions.length/2)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
 
   </script>
   </body>
