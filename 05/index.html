@@ -53,8 +53,9 @@
           if(
             gl_PointCoord.x * gl_PointCoord.x +
             gl_PointCoord.y * gl_PointCoord.y
-            < .5 - (uPulse/6.0)
-          ) {
+            <
+            .5 - (uPulse/6.0)
+            ) {
             gl_FragColor = vec4(1.0-uPulse,gl_PointCoord.y,gl_PointCoord.x,1.0);
           } else {
             gl_FragColor = vec4(uPulse,gl_PointCoord.x,gl_PointCoord.y,1.0);
