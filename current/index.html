@@ -39,25 +39,16 @@
 
       var vertexShader = compile(gl, gl.VERTEX_SHADER, `
         attribute vec2 aPosition;
-        attribute vec4 aColor;
-        varying vec4 vColor;
-        uniform mat3 uMatrix;
-        uniform mat3 uAspect;
 
         void main () {
-          gl_Position = vec4(uAspect* uMatrix * vec3(aPosition, 0), 1);
-          vColor = aColor;
+          gl_Position = vec4(aPosition, 0, 1);
         }`)
 
       var fragmentShader = compile(gl, gl.FRAGMENT_SHADER, `
         precision mediump float;
-        uniform vec4 uFragColor;
-        varying vec4 vColor;
 
         void main () {
-          // if(length(gl_PointCoord-vec2(0)) > 0.5)
-            // discard;
-          gl_FragColor = vColor;
+          gl_FragColor = vec4(1.0,0.5,1.0,0.9);
         }`
       )
 
@@ -73,22 +64,17 @@
       gl.useProgram(program)
 
       var aPosition = gl.getAttribLocation(program, 'aPosition')
-      var aColor = gl.getAttribLocation(program, 'aColor')
-      var uFragColor = gl.getUniformLocation(program, 'uFragColor')
-      var uMatrix = gl.getUniformLocation(program, 'uMatrix')
-      var uAspect = gl.getUniformLocation(program, 'uAspect')
 
-      gl.uniform4f(uFragColor, 0, 1, 0.5, 1)
 
       var positions = new Float32Array([
-      // X    Y       r    g   b
-      -.25,   -.25,  1,   .5,  0,
-      -.1,   .1,     0.5, 0,  1,
-      .1,   -.1,     0,   1,  0.5,
+        // X    Y
+        -1,   -1,
+        -1,  1,
+        1,   -1,
 
-      .25,   .25,    0,   0.5,  1,
-      -.1,   .1,     0.5, 0,  1,
-      .1,   -.1,     0,   1,  0.5
+        1,   1,
+        -1,  1,
+        1,   -1,
 
       ])
 
@@ -102,46 +88,20 @@
         2,
         gl.FLOAT,
         gl.FALSE,
-        Float32Array.BYTES_PER_ELEMENT * 5,
+        0,
+        // Float32Array.BYTES_PER_ELEMENT * 5,
         0)
       gl.enableVertexAttribArray(aPosition)
 
 
-      gl.vertexAttribPointer(
-        aColor,
-        3,
-        gl.FLOAT,
-        gl.FALSE,
-        Float32Array.BYTES_PER_ELEMENT * 5,
-        Float32Array.BYTES_PER_ELEMENT * 2)
-      gl.enableVertexAttribArray(aColor)
-
-
-
-      gl.uniformMatrix3fv(uAspect, false, [
-        1,0,0,
-        0,canvas.width / canvas.height,0,
-        0,0,1,
-      ])
-
 
       function render(t) {
-        requestAnimationFrame(render)
+        // requestAnimationFrame(render)
 
-        gl.uniformMatrix3fv(uMatrix, false, rotate(Math.cos(t/2000)*Math.PI))
         gl.drawArrays(gl.TRIANGLES, 0, 6)
       }
 
       requestAnimationFrame(render)
-
-
-      function rotate(t){
-        return [
-          Math.cos(t), - Math.sin(t), 0,
-          Math.sin(t), Math.cos(t), 0,
-          0,0,1
-        ]
-      }
 
   </script>
   </body>
