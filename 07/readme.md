@@ -1,0 +1,3 @@
+# 07
+
+* loading textures
