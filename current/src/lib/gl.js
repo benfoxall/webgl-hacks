@@ -50,8 +50,38 @@ export const interleave = function(array, size, callback) {
   const chunk = array.slice(0,size)
   for (var i = 0; i < array.length; i += size) {
     callback(chunk, i / size)
-
     array.set(chunk, i)
   }
+
+}
+
+
+export const sendAttibutes = function(program, array, attrs) {
+
+  const length = attrs.reduce(function(memo, item) {
+    return memo + item[1]
+  }, 0)
+
+  var buffer = gl.createBuffer()
+  if (!buffer) throw new Error('Failed to create buffer.')
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+  gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW)
+
+  attrs.reduce(function(memo, item) {
+
+    var location = gl.getAttribLocation(program, item[0])
+
+    gl.vertexAttribPointer(
+      location,
+      item[1],
+      gl.FLOAT,
+      gl.FALSE,
+      Float32Array.BYTES_PER_ELEMENT * length,
+      Float32Array.BYTES_PER_ELEMENT * memo)
+    gl.enableVertexAttribArray(location)
+
+
+    return memo + item[1]
+  }, 0)
 
 }
