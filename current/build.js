@@ -1,23 +1,16 @@
-var vertex = "attribute vec2 aPosition;\nattribute vec2 aVelocity;\nuniform float uTime;\n\nvoid main () {\n\n  gl_Position = vec4(\n    (mod(aPosition + aVelocity * uTime, 1.0) * 2.2)\n    - vec2(1.1, 1.1)\n    ,\n    0.0,1.0\n  );\n\n  gl_PointSize = (\n    sin(\n      uTime * 10.0 +\n      aVelocity.x * 20.0 +\n      aVelocity.y * 10.0 +\n\n      gl_Position.x * 0.4 -\n      gl_Position.y * 0.4\n    ) + 0.8) * 3.0;\n\n}\n";
-
-var fragment = "precision mediump float;\n\nvoid main () {\n\n  if(length(gl_PointCoord-vec2(0.5)) > 0.5)\n    discard;\n\n  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n}\n";
-
-var canvas = document.createElement('canvas')
+const canvas = document.createElement('canvas')
 document.body.appendChild(canvas)
 
-var ratio = window.devicePixelRatio || 1
+const ratio = window.devicePixelRatio || 1
 canvas.width = window.innerWidth * ratio
 canvas.height = window.innerHeight * ratio
 canvas.style.width = '100%'
 
-
-var gl = canvas.getContext("webgl") ||
+const gl = canvas.getContext("webgl") ||
          canvas.getContext("experimental-webgl")
 
-if (!gl) throw new Error("WebGL unavailable")
-
 // shader compiler
-function compile(gl, type, source) {
+const compile = function(gl, type, source) {
 
   var shader = gl.createShader(type)
   gl.shaderSource(shader, source)
@@ -29,19 +22,32 @@ function compile(gl, type, source) {
   return shader
 }
 
-var vertexShader = compile(gl, gl.VERTEX_SHADER, vertex)
-var fragmentShader = compile(gl, gl.FRAGMENT_SHADER, fragment)
 
-var program = gl.createProgram()
-gl.attachShader(program, vertexShader)
-gl.attachShader(program, fragmentShader)
-gl.linkProgram(program)
 
-if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-  throw new Error(gl.getProgramInfoLog(program))
+const createProgram = function(vertex, fragment) {
+
+  var vertexShader = compile(gl, gl.VERTEX_SHADER, vertex)
+  var fragmentShader = compile(gl, gl.FRAGMENT_SHADER, fragment)
+
+  var program = gl.createProgram()
+  gl.attachShader(program, vertexShader)
+  gl.attachShader(program, fragmentShader)
+  gl.linkProgram(program)
+
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    throw new Error(gl.getProgramInfoLog(program))
+  }
+
+  gl.useProgram(program)
+
+  return program
 }
 
-gl.useProgram(program)
+var vertex = "attribute vec2 aPosition;\nattribute vec2 aVelocity;\nuniform float uTime;\n\nvoid main () {\n\n  gl_Position = vec4(\n    (mod(aPosition + aVelocity * uTime, 1.0) * 2.2)\n    - vec2(1.1, 1.1)\n    ,\n    0.0,1.0\n  );\n\n  gl_PointSize = (\n    sin(\n      uTime * 10.0 +\n      aVelocity.x * 20.0 +\n      aVelocity.y * 10.0 +\n\n      gl_Position.x * 0.4 -\n      gl_Position.y * 0.4\n    ) + 0.8) * 3.0;\n\n}\n";
+
+var fragment = "precision mediump float;\n\nvoid main () {\n\n  if(length(gl_PointCoord-vec2(0.5)) > 0.5)\n    discard;\n\n  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n}\n";
+
+const program = createProgram(vertex, fragment)
 
 var aPosition = gl.getAttribLocation(program, 'aPosition')
 var aVelocity = gl.getAttribLocation(program, 'aVelocity')
