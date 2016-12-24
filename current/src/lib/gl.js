@@ -43,3 +43,15 @@ export const createProgram = function(vertex, fragment) {
 
   return program
 }
+
+
+
+export const interleave = function(array, size, callback) {
+  const chunk = array.slice(0,size)
+  for (var i = 0; i < array.length; i += size) {
+    callback(chunk, i / size)
+
+    array.set(chunk, i)
+  }
+
+}

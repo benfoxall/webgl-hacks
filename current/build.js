@@ -43,6 +43,18 @@ const createProgram = function(vertex, fragment) {
   return program
 }
 
+
+
+const interleave = function(array, size, callback) {
+  const chunk = array.slice(0,size)
+  for (var i = 0; i < array.length; i += size) {
+    callback(chunk, i / size)
+
+    array.set(chunk, i)
+  }
+
+}
+
 var vertex = "attribute vec2 aPosition;\nattribute vec2 aVelocity;\nuniform float uTime;\n\nvoid main () {\n\n  gl_Position = vec4(\n    (mod(aPosition + aVelocity * uTime, 1.0) * 2.2)\n    - vec2(1.1, 1.1)\n    ,\n    0.0,1.0\n  );\n\n  gl_PointSize = (\n    sin(\n      uTime * 10.0 +\n      aVelocity.x * 20.0 +\n      aVelocity.y * 10.0 +\n\n      gl_Position.x * 0.4 -\n      gl_Position.y * 0.4\n    ) + 0.8) * 3.0;\n\n}\n";
 
 var fragment = "precision mediump float;\n\nvoid main () {\n\n  if(length(gl_PointCoord-vec2(0.5)) > 0.5)\n    discard;\n\n  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n}\n";
@@ -58,16 +70,13 @@ var uTime = gl.getUniformLocation(program, 'uTime')
 var n = 10000
 var points = new Float32Array(n * 4)
 
+interleave(points, 4, function(chunk) {
+  chunk[0] = Math.random()
+  chunk[1] = Math.random()
 
-for (var i, _i = 0; _i < n; _i++) {
-  i = _i * 4
-
-  points[i] = Math.random()
-  points[i + 1] = Math.random()
-
-  points[i + 2] = (Math.random() - 0.5) / 10
-  points[i + 3] = (Math.random() - 0.5) / 10
-}
+  chunk[2] = (Math.random() - 0.5) / 10
+  chunk[3] = (Math.random() - 0.5) / 10
+})
 
 
 var buffer = gl.createBuffer()

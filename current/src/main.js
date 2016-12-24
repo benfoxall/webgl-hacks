@@ -1,4 +1,4 @@
-import {gl, createProgram} from './lib/gl.js'
+import {gl, createProgram, interleave} from './lib/gl.js'
 
 import vertex from './vert.glsl'
 import fragment from './frag.glsl'
@@ -14,16 +14,13 @@ var uTime = gl.getUniformLocation(program, 'uTime')
 var n = 10000
 var points = new Float32Array(n * 4)
 
+interleave(points, 4, function(chunk) {
+  chunk[0] = Math.random()
+  chunk[1] = Math.random()
 
-for (var i, _i = 0; _i < n; _i++) {
-  i = _i * 4
-
-  points[i] = Math.random()
-  points[i + 1] = Math.random()
-
-  points[i + 2] = (Math.random() - 0.5) / 10
-  points[i + 3] = (Math.random() - 0.5) / 10
-}
+  chunk[2] = (Math.random() - 0.5) / 10
+  chunk[3] = (Math.random() - 0.5) / 10
+})
 
 
 var buffer = gl.createBuffer()
