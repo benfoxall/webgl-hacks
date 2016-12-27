@@ -24,9 +24,9 @@ interleave(data, 7, (chunk, i) => {
   chunk[3] = random(0, Math.PI*2)
 
   // color
-  chunk[4] = random(0, 1)
-  chunk[5] = random(0, 1)
-  chunk[6] = random(0, 1)
+  chunk[4] = random(0.5, 1)
+  chunk[5] = random(0.5, 1)
+  chunk[6] = random(0.5, 1)
 
 })
 
