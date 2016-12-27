@@ -18,6 +18,7 @@
   "homepage": "https://github.com/benfoxall/webgl-hacks#readme",
   "devDependencies": {
     "rollup": "^0.38.0",
+    "rollup-plugin-buble": "^0.15.0",
     "rollup-plugin-string": "^2.0.2",
     "rollup-watch": "^2.5.0"
   }
