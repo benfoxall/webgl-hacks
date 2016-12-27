@@ -1,24 +1,26 @@
 attribute vec2 aPosition;
-attribute vec2 aVelocity;
+attribute vec2 aPhase;
+attribute vec3 aColor;
 uniform float uTime;
+
+varying vec3 vColor;
 
 void main () {
 
-  gl_Position = vec4(
-    (mod(aPosition + aVelocity * uTime, 1.0) * 2.2)
-    - vec2(1.1, 1.1)
-    ,
-    0.0,1.0
-  );
+  float t = uTime * 20.0;
 
-  gl_PointSize = (
-    sin(
-      uTime * 10.0 +
-      aVelocity.x * 20.0 +
-      aVelocity.y * 10.0 +
+  vec2 off = vec2(
+    sin(t + aPhase.x),
+    sin(t + aPhase.y)
+  ) * 0.02;
 
-      gl_Position.x * 0.4 -
-      gl_Position.y * 0.4
-    ) + 0.8) * 3.0;
+  vec2 off2 = vec2(
+    sin(t + aPosition.x*2.0 + aPosition.y*3.0),
+    sin(t + aPosition.y + aPosition.x*4.0)
+  ) * 0.04;
+
+  gl_Position = vec4(aPosition+off+off2, 0.0, 1.0);
+
+  vColor = aColor;
 
 }

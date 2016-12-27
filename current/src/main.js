@@ -5,34 +5,67 @@ import fragment from './frag.glsl'
 
 const program = createProgram(vertex, fragment)
 
-var n = 10000
+var rows = 50, cols = 50;
 
-var data = new Float32Array(n * 4)
+var n = rows * cols
 
-interleave(data, 4, function(chunk) {
-  chunk[0] = Math.random()
-  chunk[1] = Math.random()
+var data = new Float32Array(n * 7)
 
-  chunk[2] = (Math.random() - 0.5) / 10
-  chunk[3] = (Math.random() - 0.5) / 10
+interleave(data, 7, (chunk, i) => {
+  var x = i % cols
+  var y = (i / cols)|0
+
+  chunk[0] = ((x/cols) - .5) * 1.5
+  chunk[1] = ((y/rows) - .5) * 1.5
+
+  // movement offset/phase
+  chunk[2] = Math.random() * Math.PI * 2
+  chunk[3] = Math.random() * Math.PI * 2
+
+  // color
+  chunk[4] = Math.random()/2 + 0.5
+  chunk[5] = Math.random()/2 + 0.5
+  chunk[6] = Math.random()/2 + 0.5
+
 })
+
+
+
+var indices = []
+
+for (var x = 0; x < cols-1; x++) {
+  for (var y = 0; y < rows-1; y++) {
+
+    indices.push(
+      x +     y * cols,
+      x + 1 + y * cols
+    )
+
+    indices.push(
+      x +     y * cols,
+      x + 1 + (y+1) * cols
+    )
+
+  }
+}
 
 sendAttibutes(
   program, data,
   [
     ['aPosition', 2],
-    ['aVelocity', 2]
-  ]
+    ['aPhase', 2],
+    ['aColor', 3]
+  ],
+  indices
 )
+
 
 var uTime = gl.getUniformLocation(program, 'uTime')
 
 function render(t) {
   requestAnimationFrame(render)
-
   gl.uniform1f(uTime, t/10000)
-  gl.drawArrays(gl.POINTS, 0, n)
-
+  gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0)
 }
 
 requestAnimationFrame(render)

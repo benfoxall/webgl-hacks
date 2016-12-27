@@ -1,9 +1,11 @@
 precision mediump float;
+varying vec3 vColor;
 
 void main () {
-
-  if(length(gl_PointCoord-vec2(0.5)) > 0.5)
-    discard;
-
-  gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+  gl_FragColor = vec4(
+    vColor.r,
+    vColor.g,
+    vColor.b,
+    1.0
+  );
 }

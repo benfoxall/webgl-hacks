@@ -56,7 +56,7 @@ export const interleave = function(array, size, callback) {
 }
 
 
-export const sendAttibutes = function(program, array, attrs) {
+export const sendAttibutes = function(program, array, attrs, indices) {
 
   const length = attrs.reduce(function(memo, item) {
     return memo + item[1]
@@ -83,5 +83,11 @@ export const sendAttibutes = function(program, array, attrs) {
 
     return memo + item[1]
   }, 0)
+
+  if(indices) {
+    var iBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, iBuffer)
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
+  }
 
 }
