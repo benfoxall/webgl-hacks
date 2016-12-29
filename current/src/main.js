@@ -1,72 +1,57 @@
 import { gl, createProgram, interleave, sendAttibutes } from './lib/gl.js'
-import { random } from './lib/util.js'
+import { random, flatten } from './lib/util.js'
+
+import icosphere from 'icosphere'
 
 import vertex from './vert.glsl'
 import fragment from './frag.glsl'
 
+gl.enable(gl.DEPTH_TEST)
+
 const program = createProgram(vertex, fragment)
 
-const rows = 50
-const cols = 50
-const n = rows * cols
+const mesh = icosphere(2)
 
-const data = new Float32Array(n * 7)
+const n = mesh.positions.length
 
-interleave(data, 7, (chunk, i) => {
-  const x = i % cols
-  const y = (i / cols) | 0
+const data = new Float32Array(n * 8)
 
-  chunk[0] = ((x/cols) - .5) * 1.5
-  chunk[1] = ((y/rows) - .5) * 1.5
+interleave(data, 8, (chunk, i) => {
+
+  chunk[0] = mesh.positions[i][0] * 0.6
+  chunk[1] = mesh.positions[i][1] * 0.6
+  chunk[2] = mesh.positions[i][2] * 0.6
 
   // movement offset/phase
-  chunk[2] = random(0, Math.PI*2)
   chunk[3] = random(0, Math.PI*2)
+  chunk[4] = random(0, Math.PI*2)
 
   // color
-  chunk[4] = random(0.5, 1)
   chunk[5] = random(0.5, 1)
   chunk[6] = random(0.5, 1)
+  chunk[7] = random(0.5, 1)
 
 })
 
 
-const indices = []
-
-for (let x = 0; x < cols - 1; x++) {
-  for (let y = 0; y < rows - 1; y++) {
-
-    indices.push(
-      x +     y * cols,
-      x + 1 + y * cols
-    )
-
-    indices.push(
-      x +     y * cols,
-      x + 1 + (y+1) * cols
-    )
-
-  }
-}
+const indices = flatten(mesh.cells)
 
 sendAttibutes(
   program, data,
   [
-    ['aPosition', 2],
+    ['aPosition', 3],
     ['aPhase', 2],
     ['aColor', 3]
   ],
   indices
 )
 
-
 const uTime = gl.getUniformLocation(program, 'uTime')
 
 function render(t) {
   requestAnimationFrame(render)
-
   gl.uniform1f(uTime, t / 10000)
-  gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0)
 }
 
 requestAnimationFrame(render)
