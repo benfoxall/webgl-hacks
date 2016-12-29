@@ -1,6 +1,8 @@
 import { rollup } from 'rollup'
 import string from 'rollup-plugin-string'
 import buble from 'rollup-plugin-buble'
+import nodeResolve from 'rollup-plugin-node-resolve'
+import commonjs from 'rollup-plugin-commonjs'
 
 export default {
     entry: 'current/src/main.js',
@@ -9,7 +11,9 @@ export default {
         string({
             include: '**/*.glsl'
         }),
-        buble()
+        buble(),
+        nodeResolve({ jsnext: true, main: true }),
+        commonjs()
     ],
     sourceMap: true
 }
