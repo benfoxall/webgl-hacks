@@ -15,22 +15,13 @@ const mesh = icosphere(4)
 
 const n = mesh.positions.length
 
-const data = new Float32Array(n * 8)
+const data = new Float32Array(n * 3)
 
-interleave(data, 8, (chunk, i) => {
+interleave(data, 3, (chunk, i) => {
 
   chunk[0] = mesh.positions[i][0] * 0.6
   chunk[1] = mesh.positions[i][1] * 0.6
   chunk[2] = mesh.positions[i][2] * 0.6
-
-  // movement offset/phase
-  chunk[3] = random(0, Math.PI*2)
-  chunk[4] = random(0, Math.PI*2)
-
-  // color
-  chunk[5] = random(0.5, 1)
-  chunk[6] = random(0.5, 1)
-  chunk[7] = random(0.5, 1)
 
 })
 
@@ -40,9 +31,7 @@ const indices = flatten(mesh.cells)
 sendAttibutes(
   program, data,
   [
-    ['aPosition', 3],
-    ['aPhase', 2],
-    ['aColor', 3]
+    ['aPosition', 3]
   ],
   indices
 )
@@ -60,9 +49,6 @@ function render(t) {
   mat4.rotateY(transform, I, t/3000)
 
   mat4.rotateX(transform, transform, Math.sin(t/1000)/3)
-
-
-  // mat4.rotateX(transform, transform, Math.sin(t/200)/30)
 
   gl.uniformMatrix4fv(uTransform, false, transform)
 
