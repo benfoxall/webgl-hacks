@@ -4,7 +4,8 @@
   "description": "Hacks for me to learn my way around webgl",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server --ignorePattern=current/src/*"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
     "rollup-watch": "^2.5.0"
   },
   "dependencies": {
+    "gl-mat4": "^1.1.4",
     "icosphere": "^1.0.0",
     "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-node-resolve": "^2.0.0"
