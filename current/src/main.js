@@ -1,4 +1,8 @@
-import { gl, createProgram, interleave, sendAttibutes } from './lib/gl.js'
+import {
+    gl, createProgram, interleave, sendAttibutes,
+    loop, loopStats
+  } from './lib/gl.js'
+
 import { random, flatten } from './lib/util.js'
 
 import icosphere from 'icosphere'
@@ -14,6 +18,8 @@ const program = createProgram(vertex, fragment)
 const mesh = icosphere(4)
 
 const n = mesh.positions.length
+
+
 
 const data = new Float32Array(n * 3)
 
@@ -42,8 +48,8 @@ const uTransform = gl.getUniformLocation(program, 'uTransform')
 const transform = mat4.create()
 const I = mat4.create()
 
-function render(t) {
-  requestAnimationFrame(render)
+loopStats( t => {
+
   gl.uniform1f(uTime, t / 10000)
 
   mat4.rotateY(transform, I, t/3000)
@@ -53,6 +59,5 @@ function render(t) {
   gl.uniformMatrix4fv(uTransform, false, transform)
 
   gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0)
-}
 
-requestAnimationFrame(render)
+})

@@ -1,14 +1,23 @@
+import {Stats} from './stats.js'
 
 const canvas = document.createElement('canvas')
 document.body.appendChild(canvas)
 
-const ratio = window.devicePixelRatio || 1
-canvas.width = window.innerWidth * ratio
-canvas.height = window.innerHeight * ratio
-canvas.style.width = '100%'
 
 export const gl = canvas.getContext("webgl") ||
          canvas.getContext("experimental-webgl")
+
+
+const renderRatio = ratio => {
+  canvas.width = window.innerWidth * ratio
+  canvas.height = window.innerHeight * ratio
+  canvas.style.width = '100%'
+
+  gl.viewport(0, 0, canvas.width, canvas.height)
+}
+
+renderRatio(window.devicePixelRatio || 1)
+
 
 // shader compiler
 export const compile = function(gl, type, source) {
@@ -89,5 +98,74 @@ export const sendAttibutes = function(program, array, attrs, indices) {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, iBuffer)
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
   }
+
+}
+
+
+export const loop = fn => {
+  const render = (time) => {
+    requestAnimationFrame(render)
+    fn(time)
+  }
+  requestAnimationFrame(render)
+}
+
+
+
+export const loopStats = fn => {
+  const stats = new Stats
+  stats.showPanel(1)
+  document.body.appendChild(stats.dom)
+
+  const render = (time) => {
+    requestAnimationFrame(render)
+    stats.begin()
+    fn(time)
+    stats.end()
+  }
+  requestAnimationFrame(render)
+}
+
+
+export const loopProtected = fn => {
+
+  // Track slow frames
+  const SLOW_THRESHOLD = 1000 / 30
+  const MAX_FRAMES = 5
+
+  let slow_frame_count = 0
+  let last_time = 0
+  let applied = false
+
+  const detectSlowness = (time) => {
+    if(applied) return
+
+    if(time - last_time > SLOW_THRESHOLD) {
+      slow_frame_count ++
+
+      if(slow_frame_count > MAX_FRAMES) {
+        console.warn('slow frames detected, lowering render ratio')
+        renderRatio(0.75)
+        applied = true
+      }
+
+    } else {
+      slow_frame_count = 0
+    }
+
+    last_time = time
+  }
+
+
+
+
+  const render = (time) => {
+    requestAnimationFrame(render)
+    fn(time)
+    detectSlowness(time)
+  }
+  requestAnimationFrame(render)
+
+
 
 }
