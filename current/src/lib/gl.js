@@ -11,7 +11,9 @@ export const gl = canvas.getContext("webgl") ||
 const renderRatio = ratio => {
   canvas.width = window.innerWidth * ratio
   canvas.height = window.innerHeight * ratio
-  canvas.style.width = '100%'
+
+  canvas.style.width = window.innerWidth + 'px'
+  canvas.style.height = window.innerHeight + 'px'
 
   gl.viewport(0, 0, canvas.width, canvas.height)
 }
@@ -114,8 +116,9 @@ export const loop = fn => {
 
 export const loopStats = fn => {
   const stats = new Stats
-  stats.showPanel(1)
+  stats.showPanel(0)
   document.body.appendChild(stats.dom)
+
 
   const render = (time) => {
     requestAnimationFrame(render)
@@ -131,26 +134,30 @@ export const loopProtected = fn => {
 
   // Track slow frames
   const SLOW_THRESHOLD = 1000 / 30
-  const MAX_FRAMES = 5
+  const MAX_FRAMES = 8
 
-  let slow_frame_count = 0
+  let slow_frame_count = -1
   let last_time = 0
   let applied = false
+
+  const applyFix = () => {
+    console.warn('slow frames detected, lowering render ratio')
+    renderRatio(0.75)
+    applied = true
+  }
+
 
   const detectSlowness = (time) => {
     if(applied) return
 
     if(time - last_time > SLOW_THRESHOLD) {
       slow_frame_count ++
-
-      if(slow_frame_count > MAX_FRAMES) {
-        console.warn('slow frames detected, lowering render ratio')
-        renderRatio(0.75)
-        applied = true
-      }
-
     } else {
       slow_frame_count = 0
+    }
+
+    if(slow_frame_count > MAX_FRAMES) {
+      applyFix()
     }
 
     last_time = time

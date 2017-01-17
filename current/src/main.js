@@ -1,6 +1,6 @@
 import {
     gl, createProgram, interleave, sendAttibutes,
-    loop, loopStats
+    loop, loopStats, loopProtected
   } from './lib/gl.js'
 
 import { random, flatten } from './lib/util.js'
@@ -48,7 +48,7 @@ const uTransform = gl.getUniformLocation(program, 'uTransform')
 const transform = mat4.create()
 const I = mat4.create()
 
-loopStats( t => {
+loopProtected( t => {
 
   gl.uniform1f(uTime, t / 10000)
 
