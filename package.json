@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "live-server --ignorePattern=current/src/*"
+    "start": "live-server --ignorePattern=current/src/* & rollup -c -w"
   },
   "repository": {
     "type": "git",
@@ -18,10 +18,10 @@
   },
   "homepage": "https://github.com/benfoxall/webgl-hacks#readme",
   "devDependencies": {
-    "rollup": "^0.38.0",
+    "rollup": "^0.41.4",
     "rollup-plugin-buble": "^0.15.0",
     "rollup-plugin-string": "^2.0.2",
-    "rollup-watch": "^2.5.0"
+    "rollup-watch": "^3.2.2"
   },
   "dependencies": {
     "gl-mat4": "^1.1.4",

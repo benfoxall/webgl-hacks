@@ -1,4 +1,3 @@
-import { rollup } from 'rollup'
 import string from 'rollup-plugin-string'
 import buble from 'rollup-plugin-buble'
 import nodeResolve from 'rollup-plugin-node-resolve'
@@ -15,5 +14,6 @@ export default {
         nodeResolve({ jsnext: true, main: true }),
         commonjs()
     ],
-    sourceMap: true
+    sourceMap: true,
+    format: 'es'
 }
