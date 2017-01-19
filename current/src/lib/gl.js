@@ -69,16 +69,17 @@ export const interleave = function(array, size, callback) {
 
 export const sendAttibutes = function(program, array, attrs, indices) {
 
-  const length = attrs.reduce(function(memo, item) {
-    return memo + item[1]
-  }, 0)
+  // the stride of the interleve
+  const length = attrs.reduce(
+    (memo, item) => memo + item[1]
+  , 0)
 
   var buffer = gl.createBuffer()
   if (!buffer) throw new Error('Failed to create buffer.')
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
   gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW)
 
-  attrs.reduce(function(memo, item) {
+  attrs.reduce((memo, item) => {
 
     var location = gl.getAttribLocation(program, item[0])
 

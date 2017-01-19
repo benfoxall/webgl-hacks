@@ -6,6 +6,6 @@ void main () {
     vColor.r,
     vColor.g,
     vColor.b,
-    0.9
+    1.0
   );
 }
