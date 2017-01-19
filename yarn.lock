@@ -213,6 +213,10 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
+triangle-normal@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/triangle-normal/-/triangle-normal-0.0.0.tgz#b67c7a7c87a578347c1d97013326f5a082b06937"
+
 vectors@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/vectors/-/vectors-0.1.0.tgz#503fbb9b804464126a88ea8ac7999251798ea854"
