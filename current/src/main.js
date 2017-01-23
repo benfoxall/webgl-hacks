@@ -3,117 +3,92 @@ import {
     loop, loopStats, loopProtected
   } from './lib/gl.js'
 
-import { random, flatten } from './lib/util.js'
+import {random, randomMove, randomRotate} from './lib/util.js'
 
-import cube from './lib/cube.js'
+import cubeGenerator from './lib/cubeGenerator.js'
 
-const c1 = cube(.3)
+// const cube = cubeGenerator(.3)
 
-// import icosphere from 'icosphere'
-import mat4 from 'gl-mat4'
+const cubes = Array.from(
+  {length: 50}, (_,i) =>
+    randomRotate(
+      randomMove(
+        cubeGenerator(
+          random(0.03, 0.06)
+        ),
+        0.5
+      )
+    )
+  )
+
+
+cubes.forEach( cube => cube.recomputeNormals() )
 
 import vertex from './vert.glsl'
 import fragment from './frag.glsl'
+
+
+import {mat4, vec4} from 'gl-matrix'
+
 
 gl.enable(gl.DEPTH_TEST)
 
 const program = createProgram(vertex, fragment)
 
-const n = c1.positions.length
+// const n = cube.indices.length
+
+const perCube = cubes[0].indices.length
+
+const n = perCube * cubes.length
+
+const data = new Float32Array(n * 9)
+
+const colors = {}
+
+interleave(data, 9, (chunk, _i) => {
+
+  const cubeIdx = Math.floor(_i / perCube)
+  const i = _i % perCube
 
 
+  const cube = cubes[cubeIdx]
+  const idx = cube.indices[i]
 
-const data = new Float32Array(n * 3)
+  chunk[0] = cube.positions[idx][0]
+  chunk[1] = cube.positions[idx][1]
+  chunk[2] = cube.positions[idx][2]
 
-interleave(data, 3, (chunk, i) => {
+  chunk[3] = cube.normals[i][0]
+  chunk[4] = cube.normals[i][1]
+  chunk[5] = cube.normals[i][2]
 
-  chunk[0] = c1.positions[i][0]
-  chunk[1] = c1.positions[i][1]
-  chunk[2] = c1.positions[i][2]
+
+  const color = colors[cubeIdx] || (colors[cubeIdx] = [
+    random(0.1,.6), random(0.1,.6), random(0.1,.6)
+  ])
+  chunk[6] = color[0]
+  chunk[7] = color[1]
+  chunk[8] = color[1] // cooler
 
 })
 
 
-// const indices = flatten(mesh.cells)
+// const indices = cube.indices
 
-const indices = c1.indices
-
-// console.log(data, indices)
 
 sendAttibutes(
   program, data,
   [
-    ['aPosition', 3]
+    ['aPosition', 3],
+    ['aNormal', 3],
+    ['aColor', 3]
   ]
-  ,indices
 )
 
-
-import normal from 'triangle-normal'
-
-
-// indices.forEach( i => {
-//
-// })
-//
-
-
-const normals = new Float32Array(indices.length)
-for (let i = 0; i < indices.length; i+=3) {
-
-  let output = normal(
-    c1.positions[indices[i]][0],
-    c1.positions[indices[i]][1],
-    c1.positions[indices[i]][2],
-
-    c1.positions[indices[i + 1]][0],
-    c1.positions[indices[i + 1]][1],
-    c1.positions[indices[i + 1]][2],
-
-    c1.positions[indices[i + 2]][0],
-    c1.positions[indices[i + 2]][1],
-    c1.positions[indices[i + 2]][2]
-  )
-
-  // easier to plot colors
-  .map( m => (m + 1)/2)
-
-  normals.set(output, i
-
-}
-
-
-// This is all very wrong, though it looks okay
-// so I'm going to go with it for now
-const nmap = new Float32Array(indices.length)
-
-nmap.set([
-  0,1,2,3,4,5,6,7,
-  0,1,2,3,4,5,6,7,
-  0,1,2,3,4,5,6,7,
-  0,1,2,3,4,5,6,7
-
-  // 0,0,0,1,1,1,2,2,2,
-  // 3,3,3,4,4,4,5,5,5,
-  // 3,3,3,4,4,4,5,5,5,
-  // 3,3,3,4,4,4,5,5,5
-],0)
-
-sendAttibutes(
-  program, normals,
-  [
-    ['aNormal', 3]
-  ]
-  , nmap
-)
-
-
-// projectionMatrix
 
 const uTime = gl.getUniformLocation(program, 'uTime')
 const uTransform = gl.getUniformLocation(program, 'uTransform')
 const uProjection = gl.getUniformLocation(program, 'uProjection')
-
 
 
 const ratio = gl.canvas.clientWidth / gl.canvas.clientHeight
@@ -134,18 +109,17 @@ const I = mat4.create()
 
 loopProtected( t => {
 
-  gl.uniform1f(uTime, t / 10000)
+  gl.uniform1f(uTime, t / 1000)
 
   mat4.rotateY(transform, I, t/3000)
 
-  mat4.rotateX(transform, transform, Math.sin(t/6030)/3)
+  mat4.rotateX(transform, transform, Math.sin(t/6060)/3)
 
-  mat4.rotateZ(transform, transform, Math.sin(t/5300)/3)
+  mat4.rotateZ(transform, transform, Math.sin(t/5040)/3)
 
   gl.uniformMatrix4fv(uTransform, false, transform)
 
 
-
-  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0)
+  gl.drawArrays(gl.TRIANGLES, 0, n)
 
 })
