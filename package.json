@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "gl-mat4": "^1.1.4",
+    "gl-matrix": "https://github.com/mapbox/gl-matrix.git",
     "icosphere": "^1.0.0",
     "live-server": "^1.2.0",
     "rollup-plugin-commonjs": "^7.0.0",
