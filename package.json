@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "live-server --ignorePattern=current/src/* & rollup -c -w"
+    "start": "live-server --ignore=**/current/src/**,**/current/build.js.map & rollup -c -w"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   "dependencies": {
     "gl-mat4": "^1.1.4",
     "icosphere": "^1.0.0",
+    "live-server": "^1.2.0",
     "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "triangle-normal": "^0.0.0"
