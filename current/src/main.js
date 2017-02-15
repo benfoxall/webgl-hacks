@@ -90,6 +90,10 @@ const uTime = gl.getUniformLocation(program, 'uTime')
 const uTransform = gl.getUniformLocation(program, 'uTransform')
 const uProjection = gl.getUniformLocation(program, 'uProjection')
 
+const uMVP = gl.getUniformLocation(program, 'uMVP')
+
+
+
 
 const ratio = gl.canvas.clientWidth / gl.canvas.clientHeight
 const projectionMatrix = mat4.create()
@@ -107,7 +111,39 @@ const transform = mat4.create()
 const I = mat4.create()
 
 
-loopProtected( t => {
+// loopProtected( t => {
+//
+//   gl.uniform1f(uTime, t / 1000)
+//
+//   mat4.rotateY(transform, I, t/3000)
+//
+//   mat4.rotateX(transform, transform, Math.sin(t/6060)/3)
+//
+//   mat4.rotateZ(transform, transform, Math.sin(t/5040)/3)
+//
+//   gl.uniformMatrix4fv(uTransform, false, transform)
+//
+//
+//   gl.drawArrays(gl.TRIANGLES, 0, n)
+//
+// })
+
+import {setup} from './lib/webvr.js'
+
+// loopWebVR
+
+const mvpMatrix = mat4.create()
+
+setup( ({display, frameData, canvas}) => {
+
+
+
+  gl.viewport(0, 0, canvas.width / 2, canvas.height)
+
+  mat4.multiply(mvpMatrix, frameData.leftProjectionMatrix, frameData.leftViewMatrix)
+  gl.uniformMatrix4fv(uMVP, false, mvpMatrix)
+
+  const t = window.performance.now()
 
   gl.uniform1f(uTime, t / 1000)
 
@@ -122,4 +158,31 @@ loopProtected( t => {
 
   gl.drawArrays(gl.TRIANGLES, 0, n)
 
+
+
+  gl.viewport(canvas.width / 2, 0, canvas.width / 2, canvas.height)
+
+  mat4.multiply(mvpMatrix, frameData.rightProjectionMatrix, frameData.rightViewMatrix)
+  gl.uniformMatrix4fv(uMVP, false, mvpMatrix)
+
+
+  gl.uniform1f(uTime, t / 1000)
+
+  mat4.rotateY(transform, I, t/3000)
+
+  mat4.rotateX(transform, transform, Math.sin(t/6060)/3)
+
+  mat4.rotateZ(transform, transform, Math.sin(t/5040)/3)
+
+  gl.uniformMatrix4fv(uTransform, false, transform)
+
+  gl.drawArrays(gl.TRIANGLES, 0, n)
+
+  if(display.isPresenting)
+    display.submitFrame()
+
 })
+//
+// webvr((properties) => {
+//
+// })
