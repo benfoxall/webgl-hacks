@@ -1,6 +1,5 @@
 import {
-    gl, createProgram, interleave, sendAttibutes,
-    loop, loopStats, loopProtected
+    gl, createProgram, interleave, sendAttibutes
   } from './lib/gl.js'
 
 import {random, randomMove, randomRotate} from './lib/util.js'
@@ -10,13 +9,13 @@ import cubeGenerator from './lib/cubeGenerator.js'
 // const cube = cubeGenerator(.3)
 
 const cubes = Array.from(
-  {length: 50}, (_,i) =>
+  {length: 500}, (_,i) =>
     randomRotate(
       randomMove(
         cubeGenerator(
-          random(0.03, 0.06)
+          random(0.01, 0.04)
         ),
-        0.5
+        0.5, 0.6
       )
     )
   )
@@ -32,6 +31,7 @@ import {mat4, vec4} from 'gl-matrix'
 
 
 gl.enable(gl.DEPTH_TEST)
+gl.clearColor(0.95, 0.95, 0.95, 1)
 
 const program = createProgram(vertex, fragment)
 
@@ -110,79 +110,21 @@ gl.uniformMatrix4fv(uProjection, false, projectionMatrix)
 const transform = mat4.create()
 const I = mat4.create()
 
+import {VRLoop} from './lib/webvr.js'
 
-// loopProtected( t => {
-//
-//   gl.uniform1f(uTime, t / 1000)
-//
-//   mat4.rotateY(transform, I, t/3000)
-//
-//   mat4.rotateX(transform, transform, Math.sin(t/6060)/3)
-//
-//   mat4.rotateZ(transform, transform, Math.sin(t/5040)/3)
-//
-//   gl.uniformMatrix4fv(uTransform, false, transform)
-//
-//
-//   gl.drawArrays(gl.TRIANGLES, 0, n)
-//
-// })
+VRLoop((t, mvpMatrix) => {
 
-import {setup} from './lib/webvr.js'
-
-// loopWebVR
-
-const mvpMatrix = mat4.create()
-
-setup( ({display, frameData, canvas}) => {
-
-
-
-  gl.viewport(0, 0, canvas.width / 2, canvas.height)
-
-  mat4.multiply(mvpMatrix, frameData.leftProjectionMatrix, frameData.leftViewMatrix)
   gl.uniformMatrix4fv(uMVP, false, mvpMatrix)
 
-  const t = window.performance.now()
+  // gl.uniform1f(uTime, t / 1000)
 
-  gl.uniform1f(uTime, t / 1000)
-
-  mat4.rotateY(transform, I, t/3000)
-
-  mat4.rotateX(transform, transform, Math.sin(t/6060)/3)
-
-  mat4.rotateZ(transform, transform, Math.sin(t/5040)/3)
-
-  gl.uniformMatrix4fv(uTransform, false, transform)
-
-
-  gl.drawArrays(gl.TRIANGLES, 0, n)
-
-
-
-  gl.viewport(canvas.width / 2, 0, canvas.width / 2, canvas.height)
-
-  mat4.multiply(mvpMatrix, frameData.rightProjectionMatrix, frameData.rightViewMatrix)
-  gl.uniformMatrix4fv(uMVP, false, mvpMatrix)
-
-
-  gl.uniform1f(uTime, t / 1000)
-
-  mat4.rotateY(transform, I, t/3000)
-
-  mat4.rotateX(transform, transform, Math.sin(t/6060)/3)
-
-  mat4.rotateZ(transform, transform, Math.sin(t/5040)/3)
+  // mat4.rotateY(transform, I, t/3000)
+  //
+  // mat4.rotateX(transform, transform, Math.sin(t/6060)/3)
+  //
+  // mat4.rotateZ(transform, transform, Math.sin(t/5040)/3)
 
   gl.uniformMatrix4fv(uTransform, false, transform)
 
   gl.drawArrays(gl.TRIANGLES, 0, n)
-
-  if(display.isPresenting)
-    display.submitFrame()
-
 })
-//
-// webvr((properties) => {
-//
-// })

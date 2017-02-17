@@ -8,10 +8,10 @@ export const flatten = array =>
   array.reduce( (memo, item) => memo.concat(item), [] )
 
 
-export const randomMove = (geom, by) => {
-  const x = random(-by, by)
-  const y = random(-by, by)
-  const z = random(-by, by)
+export const randomMove = (geom, by, to = -by) => {
+  const x = random(to, by)
+  const y = random(to, by)
+  const z = random(to, by)
 
   for (var i = 0; i < geom.positions.length; i++) {
     geom.positions[i][0] += x

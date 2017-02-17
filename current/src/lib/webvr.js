@@ -1,33 +1,31 @@
-import {canvas} from './gl'
+import {canvas, gl} from './gl'
 
-export let display = null
+// A render loop that will automatically use webVR if
+// that's cool.
+export const VRLoop = (callback) => {
 
-export const setup = (callback) => {
-  console.log("ASDF")
+  const orig_w = gl.canvas.width
+  const orig_h = gl.canvas.height
 
-  navigator.getVRDisplays().then(displays => {
-    // Filter down to devices that can present.
-    displays = displays.filter(display => display.capabilities.canPresent)
+  const ratio = orig_w / orig_h
 
-    // If there are no devices available, quit out.
-    if (displays.length === 0) {
-      console.warn('No devices available able to present.')
-      return;
-    }
+  const projMat = mat4.create()
+  mat4.perspective(projMat, Math.PI/4, ratio, 0.1, 10)
 
+  let stop = false
 
-    display = displays[0]
+  // Normal rendering
+  function loop(t){
+    if(stop) return
+    gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
+    callback(t, projMat)
+    requestAnimationFrame(loop)
+  }
+  requestAnimationFrame(loop)
 
-    // Store the first display we find. A more production-ready version should
-    // allow the user to choose from their available displays.
-    // this._vr.display = displays[0]
-    // this._vr.display.depthNear = DemoVR.CAMERA_SETTINGS.near
-    // this._vr.display.depthFar = DemoVR.CAMERA_SETTINGS.far
+  function goVR(display) {
+    stop = true
 
-
-    canvas.className = 'vrcanvas'
-
-    // todo - resize canvas
     const leftEye = display.getEyeParameters("left")
     const rightEye = display.getEyeParameters("right")
     const width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2
@@ -35,72 +33,71 @@ export const setup = (callback) => {
     canvas.width = width
     canvas.height = height
 
+    display.requestPresent([{
+      source: canvas
+    }])
+    .catch(e => {
+      console.error("there was a problem with presenting", e)
+    })
 
-    // display.requestPresent([{
-    //   source: canvas
-    // }])
-
-    document.getElementById('vr').addEventListener('click', () => {
-      display.requestPresent([{
-        source: canvas
-      }])
-    }, false)
-
-    // .then()
-
-
+    const eyeMat = mat4.create()
     const frameData = new VRFrameData()
-
-    const render = () => {
+    const render = (t) => {
       display.requestAnimationFrame(render)
       display.getFrameData(frameData)
-      callback({display, frameData, canvas})
+      gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
+
+
+      gl.viewport(0, 0, canvas.width / 2, canvas.height)
+      mat4.multiply(eyeMat, frameData.leftProjectionMatrix, frameData.leftViewMatrix)
+      callback(t, eyeMat)
+
+      gl.viewport(canvas.width / 2, 0, canvas.width / 2, canvas.height)
+      mat4.multiply(eyeMat, frameData.rightProjectionMatrix, frameData.rightViewMatrix)
+      callback(t, eyeMat)
+
+      // callback({display, frameData, canvas})
+
+      if(display.isPresenting)
+        display.submitFrame()
+
     }
     display.requestAnimationFrame(render)
 
 
 
-
-  })
-
-}
-
-const createCanvas = (display) => {
-
-  const leftEye = display.getEyeParameters("left")
-  const rightEye = display.getEyeParameters("right")
-
-  const width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2
-  const height = Math.max(leftEye.renderHeight, rightEye.renderHeight)
-
-  console.log(width, height)
-
-  const canvas = document.createElement('canvas')
-  canvas.width = width
-  canvas.height = height
-
-  return canvas
-
-}
-
-
-/*
-
-navigator.getVRDisplays().then(displays => {
-  // Filter down to devices that can present.
-  displays = displays.filter(display => display.capabilities.canPresent)
-
-  // If there are no devices available, quit out.
-  if (displays.length === 0) {
-    console.warn('No devices available able to present.')
-    return;
   }
 
-  // Store the first display we find. A more production-ready version should
-  // allow the user to choose from their available displays.
-  this._vr.display = displays[0]
-  this._vr.display.depthNear = DemoVR.CAMERA_SETTINGS.near
-  this._vr.display.depthFar = DemoVR.CAMERA_SETTINGS.far
-})
 
-*/
+  // check if we have access to a display that can present
+  hasDisplay()
+    .then(display => {
+
+      window.display = display
+
+      // enable the button
+      const vrButton = document.getElementById('vr')
+      vrButton.style.display = 'block'
+
+      // when the button is pressed, go into `VR MODE`
+      vrButton.addEventListener('click', () => {
+        console.log("TOGGGLE VR")
+        goVR(display)
+      }, false)
+
+
+    })
+
+}
+
+const hasDisplay = () => {
+  if(!navigator.getVRDisplays) return Promise.reject()
+
+  return navigator.getVRDisplays()
+    .then(displays => {
+      const presentable = displays.filter(
+        display => display.capabilities.canPresent
+      )
+      return presentable.length ? presentable[0] : Promise.reject()
+    })
+}
