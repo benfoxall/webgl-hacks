@@ -12,19 +12,20 @@ export const VRLoop = (callback) => {
   const projMat = mat4.create()
   mat4.perspective(projMat, Math.PI/4, ratio, 0.1, 10)
 
-  let stop = false
+  let inVR = false
 
   // Normal rendering
   function loop(t){
-    if(stop) return
+    if(inVR) return
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
     callback(t, projMat)
     requestAnimationFrame(loop)
   }
   requestAnimationFrame(loop)
 
+
   function goVR(display) {
-    stop = true
+    inVR = true
 
     const leftEye = display.getEyeParameters("left")
     const rightEye = display.getEyeParameters("right")
@@ -43,6 +44,8 @@ export const VRLoop = (callback) => {
     const eyeMat = mat4.create()
     const frameData = new VRFrameData()
     const render = (t) => {
+      if(!inVR) return
+
       display.requestAnimationFrame(render)
       display.getFrameData(frameData)
       gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT)
@@ -64,8 +67,20 @@ export const VRLoop = (callback) => {
     }
     display.requestAnimationFrame(render)
 
+  }
 
 
+  // from VR to normal
+  function goBack(display) {
+    inVR = false
+    display.exitPresent()
+
+    canvas.width = orig_w
+    canvas.height = orig_h
+
+    gl.viewport(0, 0, canvas.width, canvas.height)
+
+    requestAnimationFrame(loop)
   }
 
 
@@ -82,7 +97,10 @@ export const VRLoop = (callback) => {
       // when the button is pressed, go into `VR MODE`
       vrButton.addEventListener('click', () => {
         console.log("TOGGGLE VR")
-        goVR(display)
+        if(!inVR)
+          goVR(display)
+        else
+          goBack(display)
       }, false)
 
 
