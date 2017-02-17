@@ -12,6 +12,11 @@ export const VRLoop = (callback) => {
   const projMat = mat4.create()
   mat4.perspective(projMat, Math.PI/4, ratio, 0.1, 10)
 
+
+  // add a conroller
+  addController(projMat)
+
+
   let inVR = false
 
   // Normal rendering
@@ -79,7 +84,6 @@ export const VRLoop = (callback) => {
     canvas.height = orig_h
 
     gl.viewport(0, 0, canvas.width, canvas.height)
-
     requestAnimationFrame(loop)
   }
 
@@ -118,4 +122,36 @@ const hasDisplay = () => {
       )
       return presentable.length ? presentable[0] : Promise.reject()
     })
+}
+
+
+
+const addController = (transform) => {
+  const base = mat4.clone(transform)
+
+  let down, last, tx = 0, ty = 0
+
+  document.addEventListener('mousemove', e => {
+    if(!down) return last = null
+
+    if(last) {
+
+      tx += (last.clientX - e.clientX) / 400
+      ty += (last.clientY - e.clientY) / 400
+
+      mat4.rotateX(transform, base, ty)
+      mat4.rotateY(transform, transform, tx)
+    }
+    last = e
+  }, false)
+
+  document.addEventListener('mousedown', e => {
+    down = true
+  }, false)
+
+  document.addEventListener('mouseup', e => {
+    down = false
+  }, false)
+
+
 }
