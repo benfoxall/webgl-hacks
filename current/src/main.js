@@ -64,11 +64,11 @@ interleave(data, 9, (chunk, _i) => {
 
 
   const color = colors[cubeIdx] || (colors[cubeIdx] = [
-    random(0.1,.6), random(0.1,.6), random(0.1,.6)
+    random(0.1,.6), random(0.4,.5), random(0.4,.5)
   ])
   chunk[6] = color[0]
   chunk[7] = color[1]
-  chunk[8] = color[1] // cooler
+  chunk[8] = color[2]
 
 })
 
