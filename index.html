@@ -10,6 +10,7 @@
       ul { padding: 0 } li { list-style: none; float:left }
       a { color:rgba(0,0,0,0.2); text-decoration: none; transition: .3s; display: block; background: #f4f4f4; margin: 1px; height: 5em; width: 5em; background-size: cover; padding: .5em}
       a:hover { color:#000; box-shadow: inset rgba(0,0,0,0.2) 0 0 4px;}
+      li { position: relative; overflow: hidden; } .vr:after { content: ''; display: block; height: 2em; width: 2em; bottom: 0; right: 0.3em; position: absolute; color: #333; background: url(assets/vr.svg); background-size: contain; background-position: center; background-repeat: no-repeat; transition: .2s; opacity: .75; } .vr:hover:after{ transform: scale(1.5) rotate(-6deg); opacity: 1; }
     </style>
   </head>
   <body>
@@ -31,6 +32,7 @@
       <li><a href="13/">13</a></li>
       <li><a href="14/">14</a></li>
       <li><a href="15/">15</a></li>
+      <li><a href="16/" class="vr">16</a></li>
     </ul>
 
 
