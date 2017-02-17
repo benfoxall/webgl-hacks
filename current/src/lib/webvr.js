@@ -153,5 +153,13 @@ const addController = (transform) => {
     down = false
   }, false)
 
+  const torad = Math.PI/180
+  window.addEventListener('deviceorientation', e => {
+    const a = transform, b = base
+    mat4.rotateY(a, b, -e.gamma*torad)
+    mat4.rotateX(a, a, -e.beta*torad)
+    mat4.rotateZ(a, a, -e.alpha*torad)
+  })
+
 
 }
