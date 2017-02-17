@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>WebGL Hacks</title>
+    <meta http-equiv="origin-trial" data-feature="WebVR" data-expires="2017-02-21" content="AgzqLOQrI5jt25PTfxk1Gfd7pZ8Y0LtmG5AjDJGJHwOwdpENVZP5bHQK/mGfqgPuhOhHr28QjXJFUutq4KB0sw0AAABReyJvcmlnaW4iOiJodHRwczovL2JlbmphbWluYmVuYmVuLmNvbTo0NDMiLCJmZWF0dXJlIjoiV2ViVlIiLCJleHBpcnkiOjE0ODc2ODc4NDB9">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style media="screen">
+      body {margin:0;overflow: hidden;background: #f4f4f4; user-select:none}
+      #vr {position: fixed; right:2vmin; bottom:2vmin; background: none;border:none;opacity: 0.4; transition: 1s; cursor: pointer;}
+      #vr:hover, #vr:focus {opacity: 1}
+      .vrcanvas {width:100vw; outline: 2px solid #08f}
+    </style>
+  </head>
+  <body>
+    <button id="vr" style="display:none">
+      <img src="../assets/vr.svg">
+    </button>
+    <script src="build.js"></script>
+  </body>
+</html>
