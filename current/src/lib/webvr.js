@@ -109,18 +109,21 @@ export const VRLoop = (callback) => {
 
 
     })
+    .catch(err => {
+      console.info(`Couldn't get VR display: ${err}`)
+    })
 
 }
 
 const hasDisplay = () => {
-  if(!navigator.getVRDisplays) return Promise.reject()
+  if(!navigator.getVRDisplays) return Promise.reject('WebVR not supported')
 
   return navigator.getVRDisplays()
     .then(displays => {
       const presentable = displays.filter(
         display => display.capabilities.canPresent
       )
-      return presentable.length ? presentable[0] : Promise.reject()
+      return presentable.length ? presentable[0] : Promise.reject('No screens found (but WebVR *is* supported)')
     })
 }
 
