@@ -4321,7 +4321,7 @@ var hasDisplay = function () {
 var addController = function (transform) {
   var base = mat4.clone(transform);
 
-  var down, last, tx = 0, ty = 0;
+  var down, last, tx = 0, ty = 0, mousemoved = false;
 
   document.addEventListener('mousemove', function (e) {
     if(!down) { return last = null }
@@ -4338,7 +4338,7 @@ var addController = function (transform) {
   }, false);
 
   document.addEventListener('mousedown', function (e) {
-    down = true;
+    mousemoved = down = true;
   }, false);
 
   document.addEventListener('mouseup', function (e) {
@@ -4347,6 +4347,7 @@ var addController = function (transform) {
 
   var torad = Math.PI/180;
   window.addEventListener('deviceorientation', function (e) {
+    if(mousemoved) { return }
     var a = transform, b = base;
     mat4.rotateY(a, b, -e.gamma*torad);
     mat4.rotateX(a, a, -e.beta*torad);

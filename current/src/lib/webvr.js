@@ -132,7 +132,7 @@ const hasDisplay = () => {
 const addController = (transform) => {
   const base = mat4.clone(transform)
 
-  let down, last, tx = 0, ty = 0
+  let down, last, tx = 0, ty = 0, mousemoved = false
 
   document.addEventListener('mousemove', e => {
     if(!down) return last = null
@@ -149,7 +149,7 @@ const addController = (transform) => {
   }, false)
 
   document.addEventListener('mousedown', e => {
-    down = true
+    mousemoved = down = true
   }, false)
 
   document.addEventListener('mouseup', e => {
@@ -158,6 +158,7 @@ const addController = (transform) => {
 
   const torad = Math.PI/180
   window.addEventListener('deviceorientation', e => {
+    if(mousemoved) return
     const a = transform, b = base
     mat4.rotateY(a, b, -e.gamma*torad)
     mat4.rotateX(a, a, -e.beta*torad)
