@@ -2,7 +2,7 @@ import {canvas, gl} from './gl'
 
 // A render loop that will automatically use webVR if
 // that's cool.
-export const VRLoop = (callback) => {
+export const VRLoop = (callback, {draggable=true}) => {
 
   const orig_w = gl.canvas.width
   const orig_h = gl.canvas.height
@@ -13,8 +13,10 @@ export const VRLoop = (callback) => {
   mat4.perspective(projMat, Math.PI/4, ratio, 0.1, 10)
 
 
-  // add a conroller
-  addController(projMat)
+  if(draggable) {
+    // add a conroller
+    addController(projMat)
+  }
 
 
   let inVR = false
@@ -99,13 +101,20 @@ export const VRLoop = (callback) => {
       vrButton.style.display = 'block'
 
       // when the button is pressed, go into `VR MODE`
-      vrButton.addEventListener('click', () => {
+      const toggle = () => {
         console.log("TOGGGLE VR")
         if(!inVR)
           goVR(display)
         else
           goBack(display)
-      }, false)
+      }
+
+      vrButton.addEventListener('click', toggle, false)
+
+      // window.addEventListener('keydown', toggle, false)
+      // toggle()
+
+
 
 
     })
