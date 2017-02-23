@@ -56,6 +56,19 @@ export const createProgram = function(vertex, fragment) {
 }
 
 
+export const generateBuffer = (array, callback) => {
+
+  for (var i = 0; i < array.length; i++)
+    array[i] = callback(i)
+
+  const buffer = gl.createBuffer()
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+  gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW)
+
+  return buffer
+
+}
+
 
 export const interleave = function(array, size, callback) {
   const chunk = array.slice(0,size)
