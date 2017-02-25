@@ -2,7 +2,7 @@ import {canvas, gl} from './gl'
 
 // A render loop that will automatically use webVR if
 // that's cool.
-export const VRLoop = (callback, {draggable=true}) => {
+export const VRLoop = (callback, {draggable=true}={}) => {
 
   const orig_w = gl.canvas.width
   const orig_h = gl.canvas.height
@@ -60,11 +60,11 @@ export const VRLoop = (callback, {draggable=true}) => {
 
       gl.viewport(0, 0, canvas.width / 2, canvas.height)
       mat4.multiply(eyeMat, frameData.leftProjectionMatrix, frameData.leftViewMatrix)
-      callback(t, eyeMat)
+      callback(t, eyeMat, frameData)
 
       gl.viewport(canvas.width / 2, 0, canvas.width / 2, canvas.height)
       mat4.multiply(eyeMat, frameData.rightProjectionMatrix, frameData.rightViewMatrix)
-      callback(t, eyeMat)
+      callback(t, eyeMat, frameData)
 
       // callback({display, frameData, canvas})
 

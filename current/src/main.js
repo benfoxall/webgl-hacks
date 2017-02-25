@@ -21,8 +21,9 @@ gl.clearColor(0.95, 0.95, 0.95, 1)
 const program = createProgram(vertex, fragment)
 
 
-const uTime = gl.getUniformLocation(program, 'uTime')
+const uPosePosition = gl.getUniformLocation(program, 'uPosePosition')
 const uProjection = gl.getUniformLocation(program, 'uProjection')
+const uTime = gl.getUniformLocation(program, 'uTime')
 const uMVP = gl.getUniformLocation(program, 'uMVP')
 
 
@@ -43,7 +44,12 @@ gl.enableVertexAttribArray(aPosition);
 
 import {VRLoop} from './lib/webvr.js'
 
-VRLoop((t, mvpMatrix) => {
+VRLoop((t, mvpMatrix, frameData) => {
+
+  gl.uniform3fv(
+    uPosePosition,
+    frameData? frameData.pose.position : [0,0,0]
+  )
 
   gl.uniform1f(uTime, t)
 
@@ -51,6 +57,4 @@ VRLoop((t, mvpMatrix) => {
 
   gl.drawArrays(gl.POINTS, 0, pointCount)
 
-}, {
-  draggable: false
 })
