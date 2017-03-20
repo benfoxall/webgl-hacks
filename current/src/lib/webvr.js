@@ -111,7 +111,7 @@ export const VRLoop = (callback, {draggable=true}={}) => {
 
       vrButton.addEventListener('click', toggle, false)
 
-      // window.addEventListener('keydown', toggle, false)
+      window.addEventListener('keydown', toggle, false)
       // toggle()
 
 
