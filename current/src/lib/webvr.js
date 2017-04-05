@@ -43,6 +43,8 @@ export const VRLoop = (callback, {draggable=true}={}) => {
 
       if(width && height) {
 
+        console.log(`resizing: ${width} x ${height}`)
+
         canvas.width = width
         canvas.height = height
 
@@ -66,6 +68,7 @@ export const VRLoop = (callback, {draggable=true}={}) => {
       if(!inVR) return
 
       if(!resized) resized = resize()
+
 
       display.requestAnimationFrame(render)
       display.getFrameData(frameData)

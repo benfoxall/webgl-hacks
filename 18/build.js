@@ -4029,6 +4029,8 @@ var VRLoop = function (callback, ref) {
 
       if(width && height) {
 
+        console.log(("resizing: " + width + " x " + height));
+
         canvas.width = width;
         canvas.height = height;
 
@@ -4052,6 +4054,7 @@ var VRLoop = function (callback, ref) {
       if(!inVR) { return }
 
       if(!resized) { resized = resize(); }
+
 
       display.requestAnimationFrame(render);
       display.getFrameData(frameData);
