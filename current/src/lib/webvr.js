@@ -34,12 +34,24 @@ export const VRLoop = (callback, {draggable=true}={}) => {
   function goVR(display) {
     inVR = true
 
-    const leftEye = display.getEyeParameters("left")
-    const rightEye = display.getEyeParameters("right")
-    const width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2
-    const height = Math.max(leftEye.renderHeight, rightEye.renderHeight)
-    canvas.width = width
-    canvas.height = height
+    const resize = () => {
+
+      const leftEye = display.getEyeParameters("left")
+      const rightEye = display.getEyeParameters("right")
+      const width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2
+      const height = Math.max(leftEye.renderHeight, rightEye.renderHeight)
+
+      if(width && height) {
+
+        canvas.width = width
+        canvas.height = height
+
+        return true
+      }
+
+    }
+
+    let resized = resize()
 
     display.requestPresent([{
       source: canvas
@@ -52,6 +64,8 @@ export const VRLoop = (callback, {draggable=true}={}) => {
     const frameData = new VRFrameData()
     const render = (t) => {
       if(!inVR) return
+
+      if(!resized) resized = resize()
 
       display.requestAnimationFrame(render)
       display.getFrameData(frameData)
@@ -111,7 +125,7 @@ export const VRLoop = (callback, {draggable=true}={}) => {
 
       vrButton.addEventListener('click', toggle, false)
 
-      window.addEventListener('keydown', toggle, false)
+      // window.addEventListener('keydown', toggle, false)
       // toggle()
 
 
@@ -119,7 +133,7 @@ export const VRLoop = (callback, {draggable=true}={}) => {
 
     })
     .catch(err => {
-      console.info(`Couldn't get VR display: ${err}`)
+      console.info(`Couldnt get VR display: ${err}`)
     })
 
 }

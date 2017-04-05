@@ -3983,6 +3983,8 @@ var vertex = "attribute vec3 aPosition;\nuniform mat4 uMVP;\nuniform float uTime
 
 var fragment = "precision mediump float;\nvarying vec4 vColor;\n\nvoid main () {\n  if(length(gl_PointCoord-vec2(0.5)) > 0.5)\n    discard;\n\n  gl_FragColor = vColor; //vec4(0.0,0.0,0.0,1.0);\n}\n";
 
+// A render loop that will automatically use webVR if
+// that's cool.
 var VRLoop = function (callback, ref) {
   if ( ref === void 0 ) ref={};
   var draggable = ref.draggable; if ( draggable === void 0 ) draggable = true;
@@ -4018,12 +4020,24 @@ var VRLoop = function (callback, ref) {
   function goVR(display) {
     inVR = true;
 
-    var leftEye = display.getEyeParameters("left");
-    var rightEye = display.getEyeParameters("right");
-    var width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
-    var height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
-    canvas.width = width;
-    canvas.height = height;
+    var resize = function () {
+
+      var leftEye = display.getEyeParameters("left");
+      var rightEye = display.getEyeParameters("right");
+      var width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+      var height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+
+      if(width && height) {
+
+        canvas.width = width;
+        canvas.height = height;
+
+        return true
+      }
+
+    };
+
+    var resized = resize();
 
     display.requestPresent([{
       source: canvas
@@ -4036,6 +4050,8 @@ var VRLoop = function (callback, ref) {
     var frameData = new VRFrameData();
     var render = function (t) {
       if(!inVR) { return }
+
+      if(!resized) { resized = resize(); }
 
       display.requestAnimationFrame(render);
       display.getFrameData(frameData);
@@ -4095,7 +4111,7 @@ var VRLoop = function (callback, ref) {
 
       vrButton.addEventListener('click', toggle, false);
 
-      window.addEventListener('keydown', toggle, false);
+      // window.addEventListener('keydown', toggle, false)
       // toggle()
 
 
@@ -4103,7 +4119,7 @@ var VRLoop = function (callback, ref) {
 
     })
     .catch(function (err) {
-      console.info(("Couldn't get VR display: " + err));
+      console.info(("Couldnt get VR display: " + err));
     });
 
 };
